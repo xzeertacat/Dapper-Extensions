@@ -16,7 +16,7 @@ namespace DapperExtensions.Sql
         string Count(IClassMapper classMap, IPredicate predicate, IDictionary<string, object> parameters);
 
         string Insert(IClassMapper classMap);
-        string Update(IClassMapper classMap, IPredicate predicate, IDictionary<string, object> parameters, bool ignoreAllKeyProperties);
+        string Update(IClassMapper classMap, IPredicate predicate, IDictionary<string, object> parameters);
         string Delete(IClassMapper classMap, IPredicate predicate, IDictionary<string, object> parameters);
 
         string IdentitySql(IClassMapper classMap);
@@ -166,7 +166,7 @@ namespace DapperExtensions.Sql
             return sql;
         }
 
-        public virtual string Update(IClassMapper classMap, IPredicate predicate, IDictionary<string, object> parameters, bool ignoreAllKeyProperties)
+        public virtual string Update(IClassMapper classMap, IPredicate predicate, IDictionary<string, object> parameters)
         {
             if (predicate == null)
             {
@@ -177,11 +177,8 @@ namespace DapperExtensions.Sql
             {
                 throw new ArgumentNullException("Parameters");
             }
-            
-            var columns = ignoreAllKeyProperties
-                ? classMap.Properties.Where(p => !(p.Ignored || p.IsReadOnly) && p.KeyType == KeyType.NotAKey)
-                : classMap.Properties.Where(p => !(p.Ignored || p.IsReadOnly || p.KeyType == KeyType.Identity || p.KeyType == KeyType.Assigned));
 
+            var columns = classMap.Properties.Where(p => !(p.Ignored || p.IsReadOnly || p.KeyType == KeyType.Identity || p.KeyType == KeyType.Assigned));
             if (!columns.Any())
             {
                 throw new ArgumentException("No columns were mapped.");
